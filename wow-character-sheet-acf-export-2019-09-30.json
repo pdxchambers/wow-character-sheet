@@ -1,0 +1,101 @@
+[
+    {
+        "key": "group_5d90ed68daa6e",
+        "title": "WoW Profile",
+        "fields": [
+            {
+                "key": "field_5d90ed7411e71",
+                "label": "Client ID",
+                "name": "client_id",
+                "type": "text",
+                "instructions": "This is the Client ID from the Blizzard API",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5d90edc211e72",
+                "label": "Client Secret",
+                "name": "client_secret",
+                "type": "text",
+                "instructions": "Client secret from the Blizzard API",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5d90edef11e73",
+                "label": "Character Name",
+                "name": "character_name",
+                "type": "text",
+                "instructions": "Lowercase name of the character you're retrieving information for.",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5d90ee2311e74",
+                "label": "Realm",
+                "name": "realm",
+                "type": "text",
+                "instructions": "Lowercase name of the realm the character lives on.",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "page_template",
+                    "operator": "==",
+                    "value": "wow-profile-page.php"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    }
+]

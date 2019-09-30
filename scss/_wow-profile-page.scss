@@ -1,0 +1,209 @@
+﻿@import url('https://fonts.googleapis.com/css?family=Comfortaa|Prosto+One&display=swap');
+#wowMainBlock {
+    background-color: #BFBFBF;
+    color: #0D0D0D;
+    font-family: 'Be Vietnam', sans-serif;
+    font-size: 14px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+
+    h2, h3 {
+        font-family: 'Comfortaa', cursive;
+    }
+
+    table {
+        caption {
+            color: #395273;
+            font-size: 1.25rem;
+        }
+    }
+}
+
+#profileHeader {
+    background-color: #364559;
+    color: #BFBFBF;
+}
+
+
+#wowCharImgBlock,
+#wowCharInfoBlock,
+#wowCharEquipBlock,
+#wowCharStatsBlock,
+#wowOtherCharBlock{
+    @media(min-width: 992px){
+        padding: 10px;
+    }
+}
+
+#wowCharImgBlock {
+    width: 100%;
+}
+#wowCharInfoBlock {
+    #charName {
+        padding-top: 30px;
+        text-align: center;
+
+        h2 {
+            font-size: 2.25rem;
+        }
+
+        .level {
+            background-color: #1D5357;
+            border: thin solid #395273;
+            border-radius: 5px;
+            color: #BFBFBF;
+            display: inline-block;
+            padding: 0 5px;
+            text-align: center;
+
+            .label,
+            .value {
+                display: block;
+            }
+
+            .label {
+                font-size: .75rem;
+                text-transform: uppercase;
+            }
+
+            .value {
+                font-size: 1.15rem;
+            }
+        }
+
+        .statHeader, .statVal {
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+
+        .statVal {
+            border-radius: 3px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .honor {
+            display: block;
+            font-size: 1.25rem;
+        }
+    }
+    #charClass {
+        span.specialization {
+            font-style: italic;
+        }
+    }
+}
+
+#charFac {
+    text-align: center;
+    img {
+        width: 50%;
+    }
+
+    h3#realm {
+        padding-bottom: 30px;
+        span.fa {
+            background-color: #0D0D0D;
+            border: thin solid #BFBFBF;
+            border-radius: 3px;
+            padding: 10px;
+            margin-left: 10px;
+        }
+    }
+}
+
+#faction{
+    margin: 30px;
+}
+#wowCharEquipBlock {
+    border-top: thin solid #395273;
+    padding: 10px;
+    h3{
+        color: #0D0D0D;
+    }
+    table{
+        text-align: left;
+    }
+}
+#wowCharStatsBlock {
+    border-top: thin solid #395273;
+    padding-left: 30px;
+
+    #charStats {
+        table {
+            margin-top: 20px;
+            text-align: center;
+            width: 75%;
+
+            th {
+                border-bottom: thin solid #395273;
+            }
+        }
+    }
+
+    #professionTable {
+        display: flex;
+        table {
+            text-align: left;
+            width: 50%;
+        }
+    }
+}
+#errorBlock {
+    background-color: #BFBFBF;
+    margin: 0 auto;
+    max-width: 992px;
+    text-align: center;
+    h2{
+        color: #790000;
+        text-transform: uppercase;
+    } 
+    h3{
+        color: #0D0D0D;
+    }
+}
+
+@media(min-width: 768px) {
+    #profileHeader{
+        display: flex;
+    }
+    #wowCharImgBlock,
+    #wowCharInfoBlock,
+    #charFac{
+        width: 33%;
+    }
+    #wowCharImgBlock{
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 30px;
+    }
+    #wowCharInfoBlock #charName{
+        h2{
+            font-size: 1.9rem;
+         }
+    }
+    #charFac {
+        img {
+            width: 75%;
+        }
+    }
+    #wowCharStatsBlock {
+        table {
+            margin: 0 auto;
+        }
+
+        #professionTable {
+            table {
+                width: 25%;
+            }
+        }
+    }
+}
+
+@media(min-width: 992px){
+    #charFac {
+        img {
+            width: 50%;
+        }
+    }
+}
