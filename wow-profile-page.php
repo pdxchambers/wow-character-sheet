@@ -1,7 +1,76 @@
 <?php
-	/* Template Name: WoW Page */
-	 get_header();
+ /**
+  * WoW Character Sheet
+  *
+  * @author            Julien Chambers
+  * @copyright         2021 Julien Chambers
+  * @license           GPL-3.0-or-later
+  *
+  * Plugin Name:       WoW Character Sheet
+  * Plugin URI:        https://pdxchambers.com/wow-character-sheet/
+  * Description:       This plugin queries the Blizzard API to display information about a character in World of Warcraft.
+  * Version:           2.0.1
+  * Requires at least: 5.6
+  * Requires PHP:      7.2
+  * Author:            Julien Chambers
+  * Author URI:        https://www.pdxchambers.com
+  * License:           GPL v3 or later
+  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
+  * Text Domain:       wow-character-sheet
+  *
+  *	WoW Character Sheet is free software: you can redistribute it and/or modify
+  *	it under the terms of the GNU General Public License as published by
+  *	the Free Software Foundation, either version 2 of the License, or
+  *	any later version.
+  *	
+  *	WoW Character Sheet is distributed in the hope that it will be useful,
+  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  *	GNU General Public License for more details.
+  *	
+  *	You should have received a copy of the GNU General Public License
+  *	along with WoW Character Sheet. If not, see {URI to Plugin License}.
+ */
+	 /*Hooks and Functions required by WordPress*/
+	 register_activation_hook(__FILE__, 'wow_character_sheet_activation');
+	 register_deactivation_hook(__FILE__, 'wow_character_sheet_deactivation');
+	 register_uninstall_hook(__FILE__, 'wow_character_sheet_uninstall');
 
+	function wow_character_sheet_activation()
+	{
+		/*placeholder function, temporarily returns null*/
+		return null;
+	}
+
+	function wow_character_sheet_deactivation()
+	{
+		/*placeholder function, temporarily returns null*/
+		return null;
+	}
+
+	 function wow_character_sheet_uninstall()
+	 {
+		 if(!defined("WP_UNINSTALL_PLUGIN"))
+		 {
+			 die;
+		 }
+		 if(is_multisite())
+		 {
+			delete_site_option("wow-clientKey");
+		 	delete_site_option("wow-clientSecret");
+		 	delete_site_option("wow-character");
+		 	delete_site_option("wow-realm");
+		 } 
+		 else		 
+		 {
+			delete_option("wow-clientKey");
+			delete_option("wow-clientSecret");
+			delete_option("wow-character");
+			delete_option("wow-realm");
+		 }
+	}
+
+	 /*Plugin Code*/
 	 define('CLIENT_ID', get_field('client_id'));
 	 define('CLIENT_SECRET', get_field('client_secret'));
 	 define('OAUTH_ENDPOINT', 'https://us.battle.net/oauth/token');
@@ -10,13 +79,13 @@
 	 define('AVATAR_URL', 'https://render-us.worldofwarcraft.com/character/');
 
 	 /**
-		@function client_authenicate()
-		@param string $clientID - the client ID provided by the Blizzard API
-		@paream string $clientSecret - the client secret provided by the Blizzard API
-
-		Requests an oAuth token from Blizzard to be used when making API Calls and parses the 
-		resulting data.
-	 **/
+	 *	@function client_authenicate()
+	 *  @param string $clientID - the client ID provided by the Blizzard API
+	 *	@paream string $clientSecret - the client secret provided by the Blizzard API
+	 *
+	 *	Requests an oAuth token from Blizzard to be used when making API Calls and parses the 
+	 *	resulting data.
+	 */
 	 function client_authenicate($clientID, $clientSecret){
 		$url = OAUTH_ENDPOINT;
 		$grant_type = 'grant_type=client_credentials';
@@ -40,14 +109,14 @@
 	 }
 
 	 /**
-		@function fetch_character_profile()
-		@param string $realm  - the World of Warcraft realm the character exists on.
-		@param string $name   - the name of the World of Warcraft character.
-		@param string $token  - the oAuth token received from the Blizzard API
-
-		Queries the Community Profile API and returns character data. The exact datasaet returned depends on 
-		the value passed in through $fields.
-	 **/
+	 *	@function fetch_character_profile()
+	 *	@param string $realm  - the World of Warcraft realm the character exists on.
+	 *	@param string $name   - the name of the World of Warcraft character.
+	 * 	@param string $token  - the oAuth token received from the Blizzard API
+	 *
+	 * 	Queries the Community Profile API and returns character data. The exact datasaet returned depends on 
+	 *	the value passed in through $fields.
+	 */
 	 function fetch_character_profile( $realm, $name, $token ){
 		$url = 'https://us.api.blizzard.com/profile/wow/character/' . $realm . '/' . $name . '?namespace=profile-us&locale=en_US&access_token=' . $token;
 		$headers = array(
@@ -65,12 +134,12 @@
 	}
 
 	/**
-		@function get_character_data()
-		@param int $urlD       - API endpoint being queried.
-		@param string $token   - the oAuth token received from the Blizzard API
-
-		Helper function that uses a URL returned in the character profile to obtain further data about a character.
-	**/
+	 *	@function get_character_data()
+	 *	@param int $urlD       - API endpoint being queried.
+	 *	@param string $token   - the oAuth token received from the Blizzard API
+	 *
+	 *	Helper function that uses a URL returned in the character profile to obtain further data about a character.
+	*/
 	function get_character_data($url, $token){
 		$headers = array(
 			'Accept' => 'application/json',
@@ -176,10 +245,10 @@
 					} else if($profile['faction']['name'] == 'Alliance') {
 					$faction_crest = 'alliance_crest.png';
 					} else if ($profile['faction']['name'] = 'Neutral'){
-					/**
+					/*
 						Since Pandaran start out as a neutral faction, we'll use the pandaran crest for characters that 
 						have not yet chosen a faction.
-					**/
+					*/
 					$faction_crest = 'pandaren_crest.png';
 					}
 				echo '<img src="' . get_stylesheet_directory_uri() . '/img/' . $faction_crest . '" alt="' . $profile['faction']['name'] . '">';
