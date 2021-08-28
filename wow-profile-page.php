@@ -29,152 +29,22 @@
   *	GNU General Public License for more details.
   *	
   *	You should have received a copy of the GNU General Public License
-  *	along with WoW Character Sheet. If not, see {URI to Plugin License}.
+  *	along with WoW Character Sheet. If not, see https://www.gnu.org/licenses/gpl-3.0.html.
  */
-	 /*Hooks and Functions required by WordPress*/
-	 register_activation_hook(__FILE__, 'wow_character_sheet_activation');
-	 register_deactivation_hook(__FILE__, 'wow_character_sheet_deactivation');
-	 register_uninstall_hook(__FILE__, 'wow_character_sheet_uninstall');
-
-	function wow_character_sheet_activation()
-	{
-		/*placeholder function, temporarily returns null*/
-		return null;
-	}
-
-	function wow_character_sheet_deactivation()
-	{
-		/*placeholder function, temporarily returns null*/
-		return null;
-	}
-
-	 function wow_character_sheet_uninstall()
-	 {
-		 if(!defined("WP_UNINSTALL_PLUGIN"))
-		 {
-			 die;
-		 }
-		 if(is_multisite())
-		 {
-			delete_site_option("wow-clientKey");
-		 	delete_site_option("wow-clientSecret");
-		 	delete_site_option("wow-character");
-		 	delete_site_option("wow-realm");
-		 } 
-		 else		 
-		 {
-			delete_option("wow-clientKey");
-			delete_option("wow-clientSecret");
-			delete_option("wow-character");
-			delete_option("wow-realm");
-		 }
-	}
-
-	 /*Plugin Code*/
-	 define('CLIENT_ID', get_field('client_id'));
-	 define('CLIENT_SECRET', get_field('client_secret'));
-	 define('OAUTH_ENDPOINT', 'https://us.battle.net/oauth/token');
-	 define('CHARACTER_NAME', get_field('character_name'));
-	 define('CHARACTER_REALM', get_field('realm'));
-	 define('AVATAR_URL', 'https://render-us.worldofwarcraft.com/character/');
-
-	 /**
-	 *	@function client_authenicate()
-	 *  @param string $clientID - the client ID provided by the Blizzard API
-	 *	@paream string $clientSecret - the client secret provided by the Blizzard API
-	 *
-	 *	Requests an oAuth token from Blizzard to be used when making API Calls and parses the 
-	 *	resulting data.
-	 */
-	 function client_authenicate($clientID, $clientSecret){
-		$url = OAUTH_ENDPOINT;
-		$grant_type = 'grant_type=client_credentials';
-		$client_auth_string = CLIENT_ID . ':' . CLIENT_SECRET;
-		$headers = array(
-			'Accept' => 'application/json',
-			'Accept-Language' => 'en_US',
-			"grant_type=client_credentials"
-		);
-		$curl_resource = curl_init($url);
-		curl_setopt($curl_resource, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($curl_resource, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($curl_resource, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl_resource, CURLOPT_POST, TRUE);
-		curl_setopt($curl_resource, CURLOPT_POSTFIELDS, $grant_type);
-		curl_setopt($curl_resource, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($curl_resource, CURLOPT_USERPWD, $client_auth_string);
-		$result = json_decode(curl_exec($curl_resource), TRUE);
-		//var_dump($result);
-		return $result;
-	 }
-
-	 /**
-	 *	@function fetch_character_profile()
-	 *	@param string $realm  - the World of Warcraft realm the character exists on.
-	 *	@param string $name   - the name of the World of Warcraft character.
-	 * 	@param string $token  - the oAuth token received from the Blizzard API
-	 *
-	 * 	Queries the Community Profile API and returns character data. The exact datasaet returned depends on 
-	 *	the value passed in through $fields.
-	 */
-	 function fetch_character_profile( $realm, $name, $token ){
-		$url = 'https://us.api.blizzard.com/profile/wow/character/' . $realm . '/' . $name . '?namespace=profile-us&locale=en_US&access_token=' . $token;
-		$headers = array(
-			'Accept' => 'application/json',
-		);
-		$rs = curl_init($url);
-		curl_setopt($rs, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($rs, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($rs, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($rs, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($rs, CURLOPT_HTTPGET, TRUE);
-		$character_Profile = json_decode(curl_exec($rs), true);
-		//var_dump($character_Profile);
-		return $character_Profile;
-	}
+	include_once 'src/wow-character-sheet-functions.php';
+	include_once 'src/wow-character-sheet-settings.php';	
+ 	include_once 'src/wow-character-sheet-blizz-engine.php';
+	
+	
 
 	/**
-	 *	@function get_character_data()
-	 *	@param int $urlD       - API endpoint being queried.
-	 *	@param string $token   - the oAuth token received from the Blizzard API
-	 *
-	 *	Helper function that uses a URL returned in the character profile to obtain further data about a character.
-	*/
-	function get_character_data($url, $token){
-		$headers = array(
-			'Accept' => 'application/json',
-		);
-		$rs = curl_init($url . '&access_token=' . $token);
-		curl_setopt($rs, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($rs, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($rs, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($rs, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($rs, CURLOPT_HTTPGET, TRUE);
-		$character_data = json_decode(curl_exec($rs), true);
-		return $character_data;
-	}
+	 *  @function pdxc_wow_generate()
+	 * 
+	 *  Callback for the shortcode to display the data to a page.
+	 */
+	function pdxc_wow_generate(){}
 
-	/*
-		Fetch and parse authentication token from Blizzard
-	*/
-	$tokenResult = (client_authenicate(CLIENT_ID, CLIENT_SECRET));
-	if(!array_key_exists('error', $tokenResult)){
-		$access_token = $tokenResult['access_token'];
-		$token_type = $tokenResult['token_type'];
-		$token_expires = $tokenResult['expires_in'];
 
-	/*
-		Fetch Character Profile
-	*/
-		$profile = fetch_character_profile( CHARACTER_REALM, CHARACTER_NAME, $access_token );
-		if(!array_key_exists('code', $profile)){
-			$character_media = get_character_data( $profile['media']['href'], $access_token );
-			$character_equip = get_character_data( $profile['equipment']['href'], $access_token );
-			$pvp_summary = get_character_data($profile['pvp_summary']['href'], $access_token);
-			$character_stats = get_character_data($profile['statistics']['href'], $access_token);
-			$character_realm = get_character_data('https://us.api.blizzard.com/data/wow/connected-realm/' . $profile['realm']['id'] . '?namespace=dynamic-us&locale=en_US', $access_token);
-		}
-	}
 ?>
 	<?php
 		if(array_key_exists('error', $tokenResult) || array_key_exists('code', $profile)){
@@ -182,24 +52,18 @@
 	<div id="errorBlock">
 	<?php
 		if(array_key_exists('error', $tokenResult)){
-			echo '<h2>' . $tokenResult['error'] . ':</h2>';
-			echo '<h3>' . $tokenResult['error_description'] . '</h3>';
-			echo '<p style="Color:black;">Either your Client ID or Client Secret is invalid.</p>';
+			echo pdxc_wow_apiError($tokenResult['error'], $tokenResult['error_description']);
 		} else if(array_key_exists('code', $profile)){
-			echo '<h2>' . $profile['code'] . ':</h2>';
-			echo '<h3>' . $profile['detail'] . '</h3>';
-			echo '<p style="Color:black;">Something went wrong while retreiving the character profile.</p>';
+			echo pdxc_wow_apiError($tokenResult['code'], $tokenResult['detail']);
 		}
 	?>
 	</div>
 	<?php
 		} else {
 	?>
- <div id="wowMainBlock">
+<div id="wowMainBlock">
 	<div id="profileHeader">
-		<div id="wowCharImgBlock">
-			<a href="<?php  echo $character_media['render_url']; ?>"><img src="<?php echo $character_media['render_url']; ?>" alt="Avatar of <?php echo $profile['name']; ?>"></a>
-		</div>
+			pdxc_wow_render_charImgBlock( $character_media['render_url'], $profile['name']);
 		<div id="wowCharInfoBlock">
 			<div id="charName">
 				<h2><?php echo preg_replace('/{name}/', $profile['name'],  $profile['active_title']['display_string']); ?></h2>
@@ -251,7 +115,7 @@
 					*/
 					$faction_crest = 'pandaren_crest.png';
 					}
-				echo '<img src="' . get_stylesheet_directory_uri() . '/img/' . $faction_crest . '" alt="' . $profile['faction']['name'] . '">';
+				echo '<img src="' . __FILE__ . '/img/' . $faction_crest . '" alt="' . $profile['faction']['name'] . '">';
 			?>
 			</div>
 			<h3 id="realm"><?php echo $profile['realm']['name']; ?><span class="fa <?php echo $character_realm['status']['type'] == 'UP'? 'fa-arrow-circle-up' : 'fa-arrow-circle-down'; ?>"  style="color:<?php echo $character_realm['status']['type'] == 'UP'? 'green' : 'red'; ?>;"></span></h3>
@@ -315,7 +179,7 @@
 				<tbody>
 				<?php
 				$tableRow = '';
-				$profList = get_character_data('https://us.api.blizzard.com/wow/character/' . $profile['realm']['name'] . '/' . $profile['name'] . '?fields=professions&locale=en_US', $access_token);
+				$profList = pdxc_wow_get_character_data('https://us.api.blizzard.com/wow/character/' . $profile['realm']['name'] . '/' . $profile['name'] . '?fields=professions&locale=en_US', $access_token);
 				foreach( $profList['professions']['primary'] as $profession){
 					if($profession['rank'] > 0){
 						$tableRow .= '<tr><th>' . $profession['name'] . '</th><td>' . $profession['rank'] . '</td></tr>';
@@ -342,8 +206,5 @@
 			</div>
 		</div>
 	</div>
- </div>
- 	 <?php } //end else ?>
- <?php
-	get_footer();
- ?>
+</div>
+	<?php } //end else ?>
